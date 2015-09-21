@@ -33,6 +33,20 @@
                 <email>smith@cardiff.ac.uk</email>
             </address>
         </author>
+        <author fullname="Mark Donnelly" surname="Donnelly" initials="M">
+            <organization>Painless Security</organization>
+            <address>
+                <postal>
+                    <street>14 Summer Street</street>
+                    <street>Suite 202</street>
+                    <city>Malden</city>
+                    <region>Massachusetts</region>
+                    <code>02176</code>
+                    <country>United States</country>
+                </postal>
+                <email>mark@painless-security.com</email>
+            </address>
+        </author>
         
         <date year="2015" />
         
