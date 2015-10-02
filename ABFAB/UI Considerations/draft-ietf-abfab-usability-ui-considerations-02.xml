@@ -107,7 +107,7 @@
                         Identity Selector: A piece of software that enables the process by which the GSS-API acquires the identity to use with a particular service. An Identity Selector typically would allow the user to configure a set of identities along with service to identity mappings.
                     </t>
                     <t>
-                        Trust anchor: An authoritative source of verification of a particular ABFAB service or Identity Provider, used to allow authentication of a server using X.509 <xref target="RFC5280" />. Typically a commercial CA to allow authentication via chain of trust, or a preconfigured non-commercial certificate (e.g. self-signed).
+                        Trust anchor: An authoritative source of verification of a particular ABFAB service or Identity Provider, used to allow authentication of a server using X.509 <xref target="RFC5280" />. Within the context of the UI, this refers to the Identity Provider instead of the ABFAB service. Typically this will be a commercial CA to allow authentication via chain of trust, or a preconfigured non-commercial certificate (e.g. self-signed).
                     </t>
                 </list>
             </t>
@@ -144,7 +144,7 @@
             
             <section title="Identity">
                 <t>
-                    The first area where terminology is needed is around the identity/identities of the user. Users are typically used to seeing a variety of terms for aspects of their identity in the federated sense, and an even larger variety in the wider internet sense. For example, in the federated sense some of these terms include "username", "login", "network account", "institutional account", "home organisation account", "credentials", and a myriad of other such terms. However, NAI - the technically correct name for their identity in an ABFAB sense - is highly unlikely to be one of these terms that users are used to seeing. Further, given that the NAI superficially looks like an email address, there is a definite potential for confusion.
+                    The first area where terminology is needed is around the identity/identities of the user. Users are typically used to seeing a variety of terms for aspects of their identity in the federated sense, and an even larger variety in the wider Internet sense. For example, in the federated sense some of these terms include "username", "login", "network account", "institutional account", "home organisation account", "credentials", and a myriad of other such terms. However, NAI - the technically correct name for their identity in an ABFAB sense - is highly unlikely to be one of these terms that users are used to seeing. Further, given that the NAI superficially looks like an email address, there is a definite potential for confusion.
                 </t>
                 <t>
                     Implementers of an identity selector will need to carefully consider their intended audience for both their level of technical capability and the existing terminology that they may have been exposed to.
@@ -169,7 +169,7 @@
         
         <section title="Considerations around Management of Identities">
             <t>
-                One of the core features of an identity selector is the management of a user's identities. This section first looks at what information associated with an identity will need to managed, and then looks in detail at various usability considerations of this area.
+                One of the core features of an identity selector is the management of a user's identities. This section first looks at what information associated with an identity will need to manage, and then looks in detail at various usability considerations of this area.
             </t>
             
             <section title="Information associated with each Identity" anchor="Identity_Information">
@@ -177,7 +177,7 @@
                     The bare minimum set of information that MUST be stored about each identity to allow ABFAB authentication to take place is a single item:
                     <list style="symbols">
                         <t>
-                            NAI: The user's Network Access Identifier (see <xref target="RFC4282" />) for this particular credential. For example, "joe@example.com". Note that the identity selector MUST NOT store different identities that use the same NAI. This is required as the NAI is the unique key that is used by the identity selector when interacting with the GSS-API mechanism for various reasons, for example, to allow the GSS-API mechanism to report back error or success statuses.
+                            NAI: The user's Network Access Identifier (see <xref target="RFC4282" />) for this particular credential. For example, "joe@example.com". Note that the identity selector MUST NOT store different identities that use the same NAI. This is required as the NAI is the unique key that is used by the identity selector when interacting with the GSS-API mechanism for various reasons, for example, to allow the GSS-API mechanism to report back error or success statuses or to allow the application to request the use of a specific identity.
                         </t>
                     </list>
                 </t>
@@ -185,10 +185,10 @@
                     Next up is a small set of information that SHOULD be stored about each identity to allow the user to effectively select a particular identity:
                     <list style="symbols">
                         <t>
-                            Trust anchor: For the identity selector to be able to verify that the server it is going to talk to and attempt to authenticate against is the server that it is expecting, and that it is not being spoofed in some way. This is likely to be an X.509 certificate <xref target="RFC5280" />, or a tuple of (trusted root certificate, servername in Subject or subjectAltName). Storing a credential without a relevant trust anchor allows for the possibility of a malicious attacker intercepting traffic and masquerading as the server in question.
+                            Trust anchor: For the identity selector to be able to verify that the Identity Provider it is going to talk to and attempt to authenticate against is the Identity Provider that it is expecting, and that it is not being spoofed in some way. This is likely to be an X.509 certificate <xref target="RFC5280" />, or a tuple of (trusted root certificate, servername in Subject or subjectAltName). Storing a credential without a relevant trust anchor allows for the possibility of a malicious attacker intercepting traffic and masquerading as the Identity Provider in question.
                         </t>
                         <t>
-                            Credential: Whatever is used by the user to authenticate themselves with a particular NAI. What exactly this will be will be dependent on the EAP method being used, but is likely to be something like a password or a certificate. Note that this is a SHOULD, rather than a MUST, because there are use cases where a user may specifically opt for this not to be "remembered".
+                            Credential: Whatever is used by the users to authenticate themselves with a particular NAI. What exactly this will be will be dependent on the EAP method being used, but is likely to be something like a password or a certificate. Note that this is a SHOULD, rather than a MUST, because there are use cases where a user may specifically opt for this not to be "remembered".
                         </t>
                     </list>
                 </t>
