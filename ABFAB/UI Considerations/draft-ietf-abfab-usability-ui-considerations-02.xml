@@ -13,6 +13,7 @@
     <!ENTITY rfc2119 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
     <!ENTITY rfc4282 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4282.xml">
     <!ENTITY rfc5280 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5280.xml">
+    <!ENTITY rfc6698 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6698.xml">
     <!ENTITY I-D.ietf-abfab-usecases SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-abfab-usecases-05.xml">
     <!ENTITY I-D.ietf-abfab-arch SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-abfab-arch-12.xml">
 ]>
@@ -546,20 +547,6 @@
         </section>
         
 
-        <section title="Contributors">
-            <t>
-                The following individuals made important contributions to the text of this document: Sam Hartman (Painless Security LLC), and Maria Turk (Codethink Ltd).
-            </t>
-        </section>
-        
-
-        <section title="Acknowledgements">
-            <t>
-                Thanks to Jim Schaad, Stefan Winter, David Chadwick, Kevin Wasserman, Mark Donally, and Dave Crocker, for feedback and suggestions.
-            </t>
-        </section>
-
-        
         <section title="Security Considerations">
             <t>
                 Most security considerations are ones relevant to the use of GSS-EAP and are detailed in <xref target="I-D.ietf-abfab-arch"/>. There are, however, a few specific sets of security considerations related to the UI implementation.
@@ -577,7 +564,7 @@
                         A pragmatic approach would be leap of faith, whereby no Trust Anchor information is initially provisioned, and the first time the Identity Selector connects to the IdP it remembers the Trust Anchor information for future use. This doesn't mitigate against spoofing of an IdP in the first instance, but would enable mitigation against it for all future connections.
                     </t>
                     <t>
-                        Finally, there may be interesting ways to leverage technologies such as DANE to store the Trust Anchor for an IdP in DNS.
+                        Finally, there may be interesting ways to leverage technologies such as DANE <xref target="RFC6698" /> to store the Trust Anchor for an IdP in DNS.
                     </t>
                 </list>
 			</t>
@@ -592,6 +579,20 @@
             </t>
         </section>
         
+        <section title="Contributors">
+            <t>
+                The following individuals made important contributions to the text of this document: Sam Hartman (Painless Security LLC), and Maria Turk (Codethink Ltd).
+            </t>
+        </section>
+        
+
+        <section title="Acknowledgements">
+            <t>
+                Thanks to Jim Schaad, Stefan Winter, David Chadwick, Kevin Wasserman, Mark Donally, and Dave Crocker, for feedback and suggestions.
+            </t>
+        </section>
+
+        
     </middle>
     
     <back>
@@ -599,6 +600,7 @@
             &rfc2119;
             &rfc4282;
             &rfc5280;
+            &rfc6698;
             &I-D.ietf-abfab-arch;
             &I-D.ietf-abfab-usecases;
         </references>
