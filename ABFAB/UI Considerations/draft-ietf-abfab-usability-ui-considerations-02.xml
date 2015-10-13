@@ -404,7 +404,51 @@
                 
                 <section title="Automated Rules-based Association">
                     <t>
-                        It would be beneficial from a usability perspective to minimise - or avoid entirely  - situations where the user has to pick an identity for a particular service. This could be accomplished by having rules to describe services and their mapping to identities. Such a rule could match, for example, a particular identity for all IMAP servers, or a particular identity for all services in a given service realm. These rules could be configured as a part of the automated identity addition process described in <xref target="Identity_Addition_Automated_Manually_Triggered" /> or <xref target="Identity_Addition_Automated" />
+                        It would be beneficial from a usability perspective to minimise - or avoid entirely  - situations where the user has to pick an identity for a particular service. This could be accomplished by having rules to describe services and their mapping to identities. Such a rule could match, for example, a particular identity for all IMAP servers, or a particular identity for all services in a given service realm. These rules could be configured as a part of the automated identity addition process described in <xref target="Identity_Addition_Automated_Manually_Triggered" /> or <xref target="Identity_Addition_Automated" />.
+                    </t>
+                </section>
+                
+                <section title="Association Conflicts">
+                    <t>
+                        The presence of rules-based associations brings with it potential conflicts in the rules.  A non-exhaustive list of conflicts includes:
+                        
+                        <list style="symbols">
+                            <t>
+                                One rule applies to all services of a particular type, while another rule applies to all services within a particular domain.  For example, one rule applies identity A to all IMAP services, while another rule applies identity B to all services in the example.com domain.
+                            </t>
+                            <t>
+                                One rule originates from enterprise management provisioning tools as described in <xref target="Identity_Addition_Automated" />, and another rule originates from manual addition.
+                            </t>
+                            <t>
+                                The user has associated an identity with a service upon encountering the service for the first time, and later creates a rule that matches all services within that service's realm.
+                            </t>
+                        
+                        </list>
+                    </t>
+                    
+                    <t>
+                        Identity selectors MUST order the precedence of rules as follows:
+                        <list style="numbers">
+                            <t>
+                                Manually provisioned rules matching specific services and realms
+                            </t>
+                            <t>
+                                Enterprise provisioned rules matching specific services and realms
+                            </t>
+                            <t>
+                                Manually provisioned rules matching any service in a single realm
+                            </t>
+                            <t>
+                                Enterprise provisioned rules matching any service in a single realm
+                            </t>
+                            <t>
+                                Manually provisioned rules matching a single service in any realm
+                            </t>
+                            <t>
+                                Enterprise provisioned rules matching a single service in any realm
+                            </t>
+                        </list>
+                        Identity selectors SHOULD notify the user whenever a new rule will take precedence over an existing rule.
                     </t>
                 </section>
 
