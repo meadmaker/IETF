@@ -110,6 +110,9 @@
                     <t>
                         Trust anchor: An authoritative source of verification of a particular ABFAB service or Identity Provider, used to allow authentication of a server using X.509 <xref target="RFC5280" />. Within the context of the UI, this refers to the Identity Provider instead of the ABFAB service. Typically this will be a commercial CA to allow authentication via chain of trust, or a preconfigured non-commercial certificate (e.g. self-signed).
                     </t>
+                    <t>
+                        Credential: Whatever is used by the user to authenticate themselves with a particular NAI.  What exactly this will be will be dependent on the EAP method being used, but is likely to be something like a password or a certificate.
+                    </t>
                 </list>
             </t>
         </section>
@@ -119,7 +122,7 @@
                 When using the ABFAB architecture (see <xref target="I-D.ietf-abfab-arch"/>) to perform federated authentication to some service, a user will need to provide identity information that they wish to use to authenticate to that particular service. This will happen through a process of the application calling the GSS-API, which will in turn gather the user's credentials through some process. We will call this process the "identity selector" in this document (though note that this is not a recommendation on terminology for the process).
             </t>
             <t>
-                The simplest way to achieve the desired effect would be a process that simply takes the credentials from the currently logged in user (e.g. the Windows Domain Credentials) and uses those for all services that request authenticate through ABFAB. This approach gives ultimate simplicity in terms of UI (it wouldn't have one) but the least flexibility (the user has to use a single identity for everything). If there is ever to be a requirement for a user to use a different set of credentials for a service, then something more complex will be needed.
+                The simplest way to achieve the desired effect would be a process that simply takes the credentials from the currently logged in user (e.g. the Windows Domain Credentials) and uses those for all services that request authenticate through ABFAB. This approach gives ultimate simplicity in terms of UI (it wouldn't have one) but the least flexibility (the user has to use a single identity for everything). If there is ever to be a requirement for a user to use a different set of credentials for a service, or a requirement for the user to use ABFAB to authenticate to the operating system, then something more complex will be needed.
             </t>
             <t>
                 Where there is a requirement for multiple credentials to be supported, there are at least two methods that could be employed to configure identities and associated information:
@@ -189,7 +192,7 @@
                             Trust anchor: For the identity selector to be able to verify that the Identity Provider it is going to talk to and attempt to authenticate against is the Identity Provider that it is expecting, and that it is not being spoofed in some way. This is likely to be an X.509 certificate <xref target="RFC5280" />, or a tuple of (trusted root certificate, servername in Subject or subjectAltName). Storing a credential without a relevant trust anchor allows for the possibility of a malicious attacker intercepting traffic and masquerading as the Identity Provider in question.
                         </t>
                         <t>
-                            Credential: Whatever is used by the users to authenticate themselves with a particular NAI. What exactly this will be will be dependent on the EAP method being used, but is likely to be something like a password or a certificate. Note that this is a SHOULD, rather than a MUST, because there are use cases where a user may specifically opt for this not to be "remembered".
+                            Credential: Whatever is used by the users to authenticate themselves with a particular NAI. What exactly this will be will be dependent on the EAP method being used, but is likely to be something like a password or a certificate. Note that the identity selector SHOULD allow a user to store the credential.  However, there are use cases where a user may specifically opt for this not to be "remembered", so the identity selector MUST NOT store the credential without confirmation from the user.
                         </t>
                     </list>
                 </t>
@@ -214,7 +217,7 @@
 
             <section title="Storage of Identity Information" anchor="Storing_Identity_Information">
                 <t>
-                    Since some of the information that makes up the identity is sensitive in nature (e.g. containing passwords), then this information SHOULD be stored and accessed securely. This might involve ensuring the credential information is held in encrypted form on device and accessed using a passphrase. For deeper integration into the system, this could be done by using existing secure storage on the system such as Keychain on a Mac or the GNOME keyring on a GNOME based Linux device.
+                    Since some of the information that makes up the identity is sensitive in nature (e.g. containing passwords), then this information SHOULD be stored and accessed securely. This might involve ensuring the credential information is held in encrypted form on device and accessed using a passphrase. For deeper integration into the system, this could be done by using existing secure storage on the system such as Keychain on a Mac, the GNOME keyring on a GNOME based Linux device, or the Credentials Manager on Windows.
                 </t>
             </section>
             
@@ -393,16 +396,16 @@
                         
                         <list style="numbers">
                             <t>
-                                The user could manually associate a particular service with a particular identity using the identity selector before they first attempt to use the service. In order to do so, however, the user would need to know all the required technical details of that service beforehand, such as its GSS Acceptor Name.
+                                The identity selector MAY allow the user to associate a particular service with a particular identity manually, using the identity selector before they first attempt to use the service. This method is inadvisable, however, because not only might the identity in question not yet have authenticated successfully, the user would also need to know all the required technical details of that service beforehand, such as its GSS Acceptor Name.
                             </t>
                             <t>
-                                On encountering a service new to the identity selector, the identity selector could pop up a dialogue box to the user asking if they would like to use an existing identity for this service (and might also allow them to create a new identity and use that).
+                                On encountering a service new to the identity selector, the identity selector SHOULD pop up a dialogue box to the user asking if they would like to use an existing identity for this service (and might also allow them to create a new identity and use that).
                             </t>
                         </list>
                     </t>
                 </section>
                 
-                <section title="Automated Rules-based Association">
+                <section title="Automated Rules-based Association" anchor="Automated_Rules-based_Association">
                     <t>
                         It would be beneficial from a usability perspective to minimise - or avoid entirely  - situations where the user has to pick an identity for a particular service. This could be accomplished by having rules to describe services and their mapping to identities. Such a rule could match, for example, a particular identity for all IMAP servers, or a particular identity for all services in a given service realm. These rules could be configured as a part of the automated identity addition process described in <xref target="Identity_Addition_Automated_Manually_Triggered" /> or <xref target="Identity_Addition_Automated" />.
                     </t>
@@ -417,7 +420,7 @@
                                 One rule applies to all services of a particular type, while another rule applies to all services within a particular domain.  For example, one rule applies identity A to all IMAP services, while another rule applies identity B to all services in the example.com domain.
                             </t>
                             <t>
-                                One rule originates from enterprise management provisioning tools as described in <xref target="Identity_Addition_Automated" />, and another rule originates from manual addition.
+                                One rule originates from enterprise management tools as described in <xref target="Identity_Addition_Automated" />, and another rule originates from manual addition.
                             </t>
                             <t>
                                 The user has associated an identity with a service upon encountering the service for the first time, and later creates a rule that matches all services within that service's realm.
@@ -430,22 +433,22 @@
                         Identity selectors MUST order the precedence of rules as follows:
                         <list style="numbers">
                             <t>
-                                Manually provisioned rules matching specific services and realms
+                                Manually created rules matching specific services and realms
                             </t>
                             <t>
-                                Enterprise provisioned rules matching specific services and realms
+                                Enterprise created rules matching specific services and realms
                             </t>
                             <t>
-                                Manually provisioned rules matching any service in a single realm
+                                Manually created rules matching any service in a single realm
                             </t>
                             <t>
-                                Enterprise provisioned rules matching any service in a single realm
+                                Enterprise created rules matching any service in a single realm
                             </t>
                             <t>
-                                Manually provisioned rules matching a single service in any realm
+                                Manually created rules matching a single service in any realm
                             </t>
                             <t>
-                                Enterprise provisioned rules matching a single service in any realm
+                                Enterprise created rules matching a single service in any realm
                             </t>
                         </list>
                         Identity selectors SHOULD notify the user whenever a new rule will take precedence over an existing rule.
@@ -460,7 +463,13 @@
                     A user MUST be able to disassociate an identity with a service - that is, to be able to remove the mapping without having to remove the identity.
                 </t>
                 <t>
-                    There should also be provision for the automated disassociation of an identity with a service for appropriate types of authentication failures.
+                    For serious authentication errors, the identity selector SHOULD prompt the user to choose whether to disassociate the identity from the service or retain the association.  The prompt SHOULD explain the nature of the error.
+                </t>
+                <t>
+                    When such a serious authentication error occurs and the identity is selected by a rules-based association (<xref target="Automated_Rules-based_Association" />), any disassociation prompt MUST inform the user that the identity was selected by a rule.  The prompt SHOULD allow the user to retain the association, or to disassociate the rule altogether.  The prompt MAY include a third choice, to create an exception so that the rule does not apply to this specific service.
+                </t>
+                <t>
+                    As of this writing, there are no authentication failures that should cause the disassociation of an identity from a service.
                 </t>
             </section>
             
