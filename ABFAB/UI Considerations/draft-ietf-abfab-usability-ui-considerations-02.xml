@@ -108,7 +108,7 @@
                         Identity Selector: A piece of software that enables the process by which the GSS-API acquires the identity to use with a particular service. An Identity Selector typically would allow the user to configure a set of identities along with service to identity mappings.
                     </t>
                     <t>
-                        Trust anchor: An authoritative source of verification of a particular ABFAB service or Identity Provider, used to allow authentication of a server using X.509 <xref target="RFC5280" />. Within the context of the UI, this refers to the Identity Provider instead of the ABFAB service. Typically this will be a commercial CA to allow authentication via chain of trust, or a preconfigured non-commercial certificate (e.g. self-signed).
+                        Trust anchor: An authoritative source of verification of a particular ABFAB Identity Provider, used to allow authentication of an Identity Provider using X.509 <xref target="RFC5280" />. Typically this will be a commercial CA to allow authentication via chain of trust, or a preconfigured non-commercial certificate (e.g. self-signed).
                     </t>
                     <t>
                         Credential: Whatever is used by the user to authenticate themselves with a particular NAI.  What exactly this will be will be dependent on the EAP method being used, but is likely to be something like a password or a certificate.
@@ -154,7 +154,7 @@
                     Implementers of an identity selector will need to carefully consider their intended audience for both their level of technical capability and the existing terminology that they may have been exposed to.
                 </t>
                 <t>
-                    Beyond terminology, careful thought needs to be given to the paradigm to use when presenting identity to users, as identities and services are abstract concepts that some users may not find is easily understandable. Implementers may wish to keep such abstract concepts, or may wish to examine attempts to map to real world paradigms, e.g. the idea of using "Identity Cards" that are held in the user's "Wallet", as used by Microsoft Cardspace.
+                    Beyond terminology, careful thought needs to be given to the paradigm to use when presenting identity to users, as identities and services are abstract concepts that some users may not find is easily understandable. Implementers may wish to keep such abstract concepts, or may wish to examine attempts to map to real world paradigms, e.g. the idea of using "Identity Cards" that are held in the user's "Wallet", as used by Microsoft Cardspace (<xref target="MS-CS"/>).
                 </t>
             </section>
             
@@ -535,7 +535,7 @@
             <t>Service Errors:
                 <list style="symbols">
                  	<t>
-                        The Identity might have been successfully authenticated by the IdP, but the user might not have authorisation to use the service they are attempting to use.
+                        The Identity might have been successfully authenticated by the IdP, but the user might not have authorisation to use the service or privilege levels within the service they are attempting to use.
                  	</t>
                 </list>
             </t>  
@@ -658,8 +658,16 @@
             &I-D.ietf-abfab-usecases;
         </references>
         
-        <!--<references title="Informative References">
-        </references>-->
+        <references title="Informative References">
+            <reference target="https://technet.microsoft.com/en-us/magazine/2006.07.infocard.aspx"
+                       anchor="MS-CS">
+                <front>
+                    <title>The InfoCard Identity Revolution</title>
+                    <author initials="K." surname="Brown" fullname="Keith Brown"/>
+                    <date month="July" year="2006"/>
+                </front>
+            </reference>
+        </references>
         
         <section anchor="appendix" title="Change Log">
             <t>
