@@ -626,6 +626,26 @@
             </t>
         </section>
         
+        <section title="Privacy Considerations">
+            <t>
+                Since the ABFAB system facilitates the sharing of identifying information about a user, the undesired sharing of information is a real concern. Most of the privacy considerations lie outside the scope of the Identity Selector UI, which neither controls nor sees which attributes of an identity will be shared with a service. In essence, the only control that the Identity Selector has is whether or not a given identity will be shared with the service.
+            </t>
+            <t>
+                However, the selection of identity does warrant privacy considerations. Any automated choice of identity for a service will share information, potentially inappropriately. Examples of this include:
+                <list style="symbols">
+                    <t>
+                        Rules that apply to a service across all realms will cause an identity choice, even for realms the user would actually prefer to avoid interacting with at all.
+                    </t>
+                    <t>
+                        Storing a default for a particular service and realm will cause the identity to be selected in that situation going forward, even if the situation or application does not warrant that.  For instance, a web browser in privacy mode ideally should not know of any saved identity association choices.
+                    </t>
+                </list>
+            </t>
+            <t>
+                Even appropriate choices of sharing an identity with a service leaks information about the user. The desired service and the identity provider must communicate with each other to perform an authentication. Even if the authentication fails, the service will know the realm of the user credential, and the Identity Provider will know the realm, and maybe the service, that the user tried to access. For services with fallback authentication mechanisms, the system may try and fail to authenticate the user, thus sharing the realm information noted above, without the user being aware this has happened.
+            </t>
+        </section>
+        
         <section title="IANA Considerations">
             <t>
                 This document does not require actions by IANA.
