@@ -154,7 +154,7 @@
                     Implementers of an identity selector will need to carefully consider their intended audience for both their level of technical capability and the existing terminology that they may have been exposed to.
                 </t>
                 <t>
-                    Beyond terminology, careful thought needs to be given to the paradigm to use when presenting identity to users, as identities and services are abstract concepts that some users may not find is easily understandable. Implementers may wish to keep such abstract concepts, or may wish to examine attempts to map to real world paradigms, e.g. the idea of using "Identity Cards" that are held in the user's "Wallet", as used by Microsoft Cardspace (<xref target="MS-CS"/>).
+                    Beyond terminology, careful thought needs to be given to the paradigm to use when presenting identity to users, as identities and services are abstract concepts that some users may not find easily understandable.  Implementers may wish to keep such abstract concepts despite this, or may wish to examine attempts to map to real world paradigms, e.g. the idea of using "Identity Cards" that are held in the user's "Wallet", as used by the new defunct Microsoft Cardspace (<xref target="MS-CS"/>).
                 </t>
             </section>
             
@@ -165,6 +165,9 @@
             </section>
             
             <section title="Identity to Service Mapping">
+                <t>
+                    The basic functionality of the Identity Selector is to create the correct combination of Identity and Service, so that the correct identity is chosen to create the credential for the GSS-EAP connection with the given service. Mapping is the process of creating this relationship between identity and service.
+                </t>
                 <t>
                     Depending on your perspective either each identity may be mapped to multiple services, or each service has multiple identities mapped to it. Thus any UI could present either perspective, or both.
                 </t>
@@ -661,7 +664,7 @@
 
         <section title="Acknowledgements">
             <t>
-                Thanks to Jim Schaad, Stefan Winter, David Chadwick, Kevin Wasserman, Ken Klingenstein, and Dave Crocker for feedback and suggestions.
+                Thanks to Jim Schaad, Stefan Winter, David Chadwick, Kevin Wasserman, Alejandro Perez-Mendez, Ken Klingenstein, and Dave Crocker for feedback and suggestions.
             </t>
         </section>
 
