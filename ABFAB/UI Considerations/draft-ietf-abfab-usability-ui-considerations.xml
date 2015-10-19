@@ -18,7 +18,7 @@
     <!ENTITY I-D.ietf-abfab-arch SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-abfab-arch-12.xml">
 ]>
 
-<rfc category="info" docName="draft-ietf-abfab-usability-ui-considerations-02" ipr="trust200902">
+<rfc category="info" docName="draft-ietf-abfab-usability-ui-considerations-03" ipr="trust200902">
     <front>
         <title abbrev="ABFAB UI Considerations">Application Bridging for Federated Access Beyond web (ABFAB) Usability and User Interface Considerations</title>
         <author fullname="Dr. Rhys Smith" surname="Smith" initials="R">
