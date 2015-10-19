@@ -590,10 +590,13 @@
 
             <section title="Showing the Identity currently in use" anchor="Showing_Current_Identity">
                 <t>
-                    It would be beneficial if, when using a service, the identity currently in use could be made visible to the user while they are using a specific service. This allows the user to identify which identity is used with a particular service at a particular time (the user may have more than one identity that they could use with a particular service) - so that they can then disassociate the pairing.
+                    It would be beneficial if, when using a service, the identity currently in use could be made visible to the user while they are using a specific service. This allows the user to identify which identity is used with a particular service at a particular time (the user may have more than one identity that they could use with a particular service) - so that they can then disassociate the pairing.  This is especially useful when the identity is selected without any user prompt, because of a previous association.
                 </t>
                 <t>
                     Implementing such a feature may be hard, however, due to the layered nature of the ABFAB transaction - the identity selector will certainly know when successful (or failed) authentications to a particular service have happened, but after that it typically plays no further part in the use of the service. Therefore, knowing that a particular service is still using a particular identity in order to indicate this to the user would be challenging. 
+                </t>
+                <t>
+                    One approach that could be used would be to display OS notifications when an identity is used.  The notification could include information such as the application requesting the identity, the service receiving the identity, and the identity used.  Another approach could be for the identity selector to maintain a history of identity use.
                 </t>
             </section>
 
