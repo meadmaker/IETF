@@ -800,6 +800,29 @@
                 Note to RFC Editor: if this document does not obsolete an existing RFC, please remove this appendix before publication as an RFC.
             </t>
             <t>
+                IETF draft -02 to ietf draft -03
+                <list style="numbers">
+                    <t>
+                        Tidying up language throughout.
+                    </t>
+                    <t>
+                        Added the idea of an identity provider object within the identity selector, and moved the trust anchor property from the identity to the identity provider.
+                    </t>
+                    <t>
+                        Added restrictions on manual modification of automatically added identities and identity providers.
+                    </t>
+                    <t>
+                        Added precedence between identity association rules.
+                    </t>
+                    <t>
+                        Incorporated many comments from the mailing list.
+                    </t>
+                    <t>
+                        Added privacy considerations section.
+                    </t>
+                </list>
+            </t>
+            <t>
                 IETF draft -01 to ietf draft -02
                 <list style="numbers">
                     <t>
