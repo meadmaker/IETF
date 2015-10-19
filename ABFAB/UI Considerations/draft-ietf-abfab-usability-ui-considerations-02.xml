@@ -105,6 +105,9 @@
                         Service: The thing that the user is attempting to authenticate to via ABFAB technology. See <xref target="I-D.ietf-abfab-usecases"/> for some example ABFAB use cases. Also known as the Relying Party.
                     </t>
                     <t>
+                        Identity Provider: The thing able to make access management decisions about the Identity.
+                    </t>
+                    <t>
                         Identity Selector: A piece of software that enables the process by which the GSS-API acquires the identity to use with a particular service. An Identity Selector typically would allow the user to configure a set of identities along with service to identity mappings.
                     </t>
                     <t>
@@ -192,7 +195,7 @@
                     Next up is a small set of information that SHOULD be stored about each identity to allow the user to effectively select a particular identity:
                     <list style="symbols">
                         <t>
-                            Trust anchor: For the identity selector to be able to verify that the Identity Provider it is going to talk to and attempt to authenticate against is the Identity Provider that it is expecting, and that it is not being spoofed in some way. This is likely to be an X.509 certificate <xref target="RFC5280" />, or a tuple of (trusted root certificate, servername in Subject or subjectAltName). Storing a credential without a relevant trust anchor allows for the possibility of a malicious attacker intercepting traffic and masquerading as the Identity Provider in question.
+                            Identity provider realm: The ABFAB realm of the identity provider.  This is used as a key to look up the identity provider from the identity selector's list of identity providers, in order to access the trust anchor during verification of the identity provider.
                         </t>
                         <t>
                             Credential: Whatever is used by the users to authenticate themselves with a particular NAI. What exactly this will be will be dependent on the EAP method being used, but is likely to be something like a password or a certificate. Note that the identity selector SHOULD allow a user to store the credential.  However, there are use cases where a user may specifically opt for this not to be "remembered", so the identity selector MUST NOT store the credential without confirmation from the user.
@@ -203,18 +206,58 @@
                     Finally, there is a set of optional information that MAY be stored about each identity that represent useful information for the user to have and could make an identity selector more usable. Note that this list is neither intended to be exhaustive or even particularly correct; any implementer is free to use whatever make sense in their implementation and conforms to good HCI/UX guidelines. Instead, it is simply a suggested starting point.
                     <list style="symbols">
                         <t>
-                            Friendly name for identity: To allow the user to differentiate between the set of identities represented in the Identity Selector. This should be editable by the user. The only restriction on this name is that it MUST be unique within that particular user's set of identities. For example: "My University", "Google Account", "Work Login", etc.
+                            Friendly name for identity: To allow the user to differentiate between the set of identities represented in the Identity Selector. This should be editable by the user. The only restriction on this name is that it MUST be unique within that particular user's set of identities. For example: "Student username", "Google Account", "Work Login", etc.
                         </t>
                         <t>
                             Friendly icon for identity: To allow the user to differentiate between the set of identities they have they should be able to set an icon for that particular identity.
                         </t>
                         <t>
-                            Password changing URL: The URL the user should visit should they need to change their password for this particular identity. For example, "http://www.example.com/passwordreset".
+                            Password changing URL: The URL the user should visit should they need to change their password for this particular identity. For example, "http://www.example.com/passwordreset?identifier=myId".
+                        </t>
+                        <t>
+                            Helpdesk URL: The URL this particular identity should visit to get contact details for the helpdesk of the organisation that issued this particular identity for when the user encounters issues and needs help. For example, https://www.example.com/helpdesk?identifier=myId.
+                        </t>
+                    </list>
+                </t>
+            </section>
+            
+            <section title="Information associated with each Identity Provider" anchor="Identity_Provider_Information">
+                <t>
+                    Identity providers are entities that may be shared across multiple identities. For instance, a person at a university may have one identity as a student and another identity as an employee, but a single identity provider makes access management decisions about both.  In these cases, the identity selector MUST consider it an error if the trust anchor for the identity provider is different between the various identities managed by the single identity provider.
+                </t>
+                <t>
+                    The bare minimum set of information that MUST be stored about each identity provider is:
+                    <list style="symbols">
+                        <t>
+                            Realm: The realm of the identity provider.  This will uniquely identify the identity realm.
+                        </t>
+                        <t>
+                            Trust anchor: For the identity selector to be able to verify that the Identity Provider it is going to talk to and attempt to authenticate against is the Identity Provider that it is expecting, and that it is not being spoofed in some way. This is likely to be an X.509 certificate <xref target="RFC5280" />, or a tuple of (trusted root certificate, servername in Subject or subjectAltName). Storing a credential without a relevant trust anchor allows for the possibility of a malicious attacker intercepting traffic and masquerading as the Identity Provider in question.
+                        </t>
+                    </list>
+                </t>
+                <t>
+                    Identity providers also have a set of optional information that MAY be stored about each identify provider.  This set includes, but is not limited to:
+                    <list style="symbols">
+                        <t>
+                            Friendly name for the identity provider: To allow the user to differentiate between the set of identity providers represented in the Identity Selector. This should be editable by the user. The only restriction on this name is that it MUST be unique within that particular user's set of identity providers. For example: "My University", "Google", etc.
+                        </t>
+                        <t>
+                            Friendly icon for the identity provider: To allow the user to differentiate between the set of identity providers they have they should be able to set an icon for that particular identity provider.
+                        </t>
+                        <t>
+                            Password changing URL: The URL the user should visit should they need to change passwords for identities in this realm. For example, "http://www.example.com/passwordreset".
                         </t>
                         <t>
                             Helpdesk URL: The URL the user should visit to get contact details for the helpdesk of the organisation that issued this particular identity for when the user encounters issues and needs help. For example, https://www.example.com/helpdesk.
                         </t>
                     </list>
+                </t>
+                <t>
+                    Note that the password changing URL and helpdesk URL somewhat mirror the definitions of the same fields in the identity.  The distinction is that the URLs in the identity SHOULD apply to the individual identity, whereas the URLs in the identity provider SHOULD apply to all identities that the identity provider defines.  For example, an identity password change URL would provide a personalized experience of changing the password for the given identity, but the identity provider password change URL would direct the user to a page where the user would need to enter the individual identity that needs a new password.
+                </t>
+                <t>
+                    If the identity contains no password change URL or helpdesk URL, the identity selector MAY present any corresponding URL from the identity selector instead.  However, if the identity contains the URL, the identity selector SHOULD present the URL from the identity.
                 </t>
             </section>
 
@@ -226,78 +269,118 @@
             
             <section title="Adding/Association of an Identity" anchor="Identity_Addition">
                 <t>
-                    Users will have one or more identities given to them by organisations that they have a relationship with. One of the core tasks of an identity selector will be to learn about these identities in order to use them when it comes to authenticating to services on behalf of the user. Adding these identities could be done in one of three ways: manual addition, automated addition that is manually triggered, or automated addition that is automatically triggered. Each of these are discussed in more detail next.
+                    Users will have one or more identities given to them by organisations that they have a relationship with. One of the core tasks of an identity selector will be to learn about these identities and their identity providers in order to use them when it comes to authenticating to services on behalf of the user. Adding these identities could be done in one of three ways: manual addition, automated addition that is manually triggered, or automated addition that is automatically triggered. Each of these are discussed in more detail next.
                 </t>
                 <t>
                     Note that the term "association" or "addition" of an identity is used rather than "provisioning" of an identity, because while we actually are provisioning identities into the UI, provisioning is an overloaded term in the identity and access management space and could easily be confused with identity provisioning in the sense of the creation of the identity by the home organisation's identity management procedures.
                 </t>
                 
-                <section title="Manual Addition" anchor="Identity_Addition_Manual">
-                    <t>
-                        Allowing users to manually add an identity is technically the easiest method to get this information, but it is a method that has the greatest usability drawbacks - including some that create potential security issues. Most of the information required is relatively technical and finding some way of explaining what each field is to an non-technical audience is challenging (to say the least). This especially is the case for trust anchor information. Thus this method should be considered as a power-user option only, or as a fall-back should the other methods not be applicable. Implementers may well decide not to offer the manual option due to these drawbacks.
-                    </t>
-                    <t>
-                        When this method is used, careful consideration should be given to the UI presented to the user. The UI will have to ask for all of the information detailed in <xref target="Identity_Information" />.
-                    </t>
-                    <t>
-                        There are two points at which a user could manually add an identity:
-                        <list style="symbols">
-                            <t>
-                                Asynchronously: the user could be allowed to, at any time, trigger a workflow of manually adding an identity. This represents the most flexible way of adding an identity since a user can perform this at any time. It does, however, also have inherent issues when it comes to verifying the newly added identity - see <xref target="Identity_Verification" />.
-                            </t>
-                            <t>
-                                Just In Time: when connecting to a service which has no mapping to an existing identity, the user could be given an option to add a new one, as well as associating with an existing one. This seems to present a better user experience when it comes to verifying the newly added identity (see <xref target="Identity_Verification" />), however, it represents a less direct method of adding an identity. Users who have not yet added the appropriate identity to their identity selector may find it difficult to understand that they must try to access a particular service in order to add an identity.
-                            </t>
-                        </list>
-                    </t>
-                    <t>
-                        Of course, implementers could support both styles of identity addition to gain the benefits of both and give flexibility to the user.
-                    </t>
-                    <t>
-                        Finally, the area of verification of trust anchors is very important. An Identity Selector that allows for manual addition of identity information SHOULD try to ensure that trust anchor information is gathered and checked in a secure a manner as possible - where users have to enter and confirm all trust anchor information, or be required to explicitly agree to an insecure configuration if this is not done properly.
-                    </t>
+                <section title="Identity Provider Addition">
+                    <section title="Manual Identity Provider Addition" anchor="Identity_Provider_Addition_Manual">
+                        <t>
+                            Allowing users to add an identity provider manually is technically the easiest method to get this information, but it is a method that has the greatest usability drawbacks - including some that create potential security issues. Most of the information required is relatively technical and finding some way of explaining what each field is to an non-technical audience is challenging (to say the least). This especially is the case for trust anchor information. Thus this method should be considered as a power-user option only, or as a fall-back should the other methods not be applicable. Implementers may well decide not to offer the manual option due to these drawbacks.
+                        </t>
+                        <t>
+                            When this method is used, careful consideration should be given to the UI presented to the user. The UI will have to ask for all of the information detailed in <xref target="Identity_Provider_Information" />.
+                        </t>
+                        <t>
+                            Trust anchors present a particularly onerous challenge for the user to enter.  For this reason, many identity selectors will want to implement a leap-of-faith acquisition of the trust anchor.  For these leap of faith acquisitions, the identity selector SHOULD present the user with the name of the realm that the identity selector is attempting to reach, the subject of the trust anchor certificate, details of the certification chain, and a fingerprint of the certificate.  If the realm does not match the subject of the certificate, the identity selector MUST inform the user of the discrepency.  The identity selector MAY reject the leap-of-faith on its own, or MAY allow the user to proceed anyway.  If the user proceeds anyway, the identity selector SHOULD urge the user to reject the leap-of-faith.
+                        </t>
+                        <t>
+                            The area of verification of trust anchors is very important. An Identity Selector that allows for manual addition of identity provider information SHOULD try to ensure that trust anchor information is gathered and checked in a secure a manner as possible - where users have to enter and confirm all trust anchor information, or be required to explicitly agree to an insecure configuration if this is not done properly.
+                        </t>
+                    </section>
+                    
+                    <section title="Manually Triggered Automated Identity Provider Addition" anchor="Id_Prov_Man_Trig_Auto_Add">
+                        <t>
+                            One way to bypass the need for manual addition of an identity provider - and all of the usability and security issues inherent with that approach - is to provide some sort of manually triggered, but automated, addition process. One approach to accomplishing this, for example, could be for an organisation to have a section on their website where their users could visit and be given piece of data that contains much or all of the relevant identity provider information for importing into the identity selector.
+                        </t>
+                        <t>
+                            Additionally, the user SHOULD be given the opportunity to:
+                            <list style="symbols">
+                                <t>
+                                    Supply or change the default friendly name and friendly icon for that identity provider - to allow the user to customise the identifier they use for that identity provider;
+                                </t>
+                                <t>
+                                    Reject the addition of the identity provider completely - to allow the user to back out of the association process in an intuitive way.
+                                </t>
+                            </list>
+                        </t>
+                        <t>
+                            In this case, trust anchors would be directly provided through the automated addition process to help establish the trust relationship in a secure manner.
+                        </t>
+                    
+                    </section>
+                
+                    <section title="Fully Automated Identity Provider Addition" anchor="Id_Prov_Auto_Add">
+                        <t>
+                            Many organisations manage the machines of their users using enterprise management tools. Such organisations may wish to be able to automatically add a particular user's identity provider to the identity selector on their machine/network account so that the user has to do nothing.
+                        </t>
+                        <t>
+                            This represents the best usability for the user - who wouldn't actually have to do anything. However, it can only work on machines centrally managed by the organisation.
+                        </t>
+                    </section>
+                    
                 </section>
                 
-                <section title="Manually Triggered Automated Addition" anchor="Identity_Addition_Automated_Manually_Triggered">
-                    <t>
-                        One way to bypass the need for manual addition of a user's identity - and all of the usability and security issues inherent with that approach - is to provide some sort of manually triggered, but automated, addition process.
-                    </t>
-                    <t>
-                        One approach to accomplishing this, for example, could be for an organisation to have a section on their website where their users could visit, enter the user part of their NAI, and be given piece of data that contains much or all of the relevant identity information for importing into the identity selector.
-                    </t>
-                    <t>
-                        It is reasonable to assume that any such automated addition service is likely to be organisation specific, so that the Issuing Organisation and realm part of the NAI will be constant, as would be the trust anchor information. The user part of their NAI will have been input on the web service. The password could be provided as a part of the provided data or the identity selector could prompt the user to enter it.
-                    </t>
-                    <t>
-                        Additionally, the user SHOULD be given the opportunity to:
-                        <list style="symbols">
-                            <t>
-                                Supply or change the default friendly name for that identity - to allow the user to customise the identifier they use for that identity;
-                            </t>
-                            <t>
-                                Indicate whether or not the identity selector should always ask before using services with this identity - to customise the way in which the identity selector interacts with the user with this particular identity;
-                            </t>
-                            <t>
-                                Reject the addition of the identity completely - to allow the user to back out of the association process in an intuitive way.
-                            </t>
-                        </list>
-                    </t>
-                    <t>
-                        In this case, trust anchors could be directly provided through the automated addition process to help establish the trust relationship in a secure manner.
-                    </t>
+                <section title="Identity Addition">
+                    <section title="Manual Identity Addition" anchor="Identity_Addition_Manual">
+                        <t>
+                            Allowing users to add an identity manually is relatively easy in comparison to adding an identity provider manually.  If the identity provider is already known in the identity selector, then the identity selector can construct the NAI from the identity provider and a username.  Thus the manual addition of an identity in a known realm needs to prompt the user only to pick the realm, to enter the username, and to enter the credential.  If the identity provider is not known to the identity selector, the identity selector will provide the user with a way to define a new one as part of the identity addition.
+                        </t>
+                        <t>
+                            There are two points at which a user could manually add an identity:
+                            <list style="symbols">
+                                <t>
+                                    Asynchronously: the user could be allowed to, at any time, trigger a workflow of manually adding an identity. This represents the most flexible way of adding an identity since a user can perform this at any time. It does, however, also have inherent issues when it comes to verifying the newly added identity - see <xref target="Identity_Verification" />.
+                                </t>
+                                <t>
+                                    Just In Time: when connecting to a service which has no mapping to an existing identity, the user could be given an option to add a new one, as well as associating with an existing one. This seems to present a better user experience when it comes to verifying the newly added identity (see <xref target="Identity_Verification" />), however, it represents a less direct method of adding an identity. Users who have not yet added the appropriate identity to their identity selector may find it difficult to understand that they must try to access a particular service in order to add an identity.
+                                </t>
+                            </list>
+                        </t>
+                        <t>
+                            Of course, implementers could support both styles of identity addition to gain the benefits of both and give flexibility to the user.
+                        </t>
+                    </section>
+
+                    <section title="Manually Triggered Automated Identity Addition" anchor="Identity_Addition_Automated_Manually_Triggered">
+                        <t>
+                            Much like in the case of the manually triggered automated identity provider addition <xref target="Id_Prov_Man_Trig_Auto_Add"/>, an identity could be added to the identity selector through a user-initiated mechanism.  To follow the example in the identity provider section above, the organization could enhance the identity provider addition web service to prompt for the user part of the NAI.  The web service could then generate all of the data needed for adding both the identity provider and the identity.
+                        </t>
+                        <t>
+                            It is reasonable to assume that any such automated addition service is likely to be organisation specific, so that the Issuing Organisation and realm part of the NAI will be constant, as would be the trust anchor information. The user part of their NAI will have been input on the web service. The password could be provided as a part of the provided data or the identity selector could prompt the user to enter it.
+                        </t>
+                        <t>
+                            If the identity provider data contained in this identity to be added conflicts with an existing identity provider known to the identity selector, the identity selector SHOULD present the discrepency to the user.  The identity selector MAY reject the identity provider and identity on its own, or MAY allow the user to proceed anyway.  If the identity selector allows the user to proceed anyway, the identity selector SHOULD urge the user to reject the leap-of-faith, and require the user to confirm the intent to proceed before proceeding.
+                        </t>
+                        <t>
+                            Additionally, the user SHOULD be given the opportunity to:
+                            <list style="symbols">
+                                <t>
+                                    Supply or change the default friendly name for that identity - to allow the user to customise the identifier they use for that identity;
+                                </t>
+                                <t>
+                                    Indicate whether or not the identity selector should always ask before using services with this identity - to customise the way in which the identity selector interacts with the user with this particular identity;
+                                </t>
+                                <t>
+                                    Reject the addition of the identity completely - to allow the user to back out of the association process in an intuitive way.
+                                </t>
+                            </list>
+                        </t>
+                    </section>
+                    
+                    <section title="Fully Automated Identity Addition" anchor="Identity_Addition_Automated">
+                        <t>
+                            Section <xref target="Id_Prov_Auto_Add"/> introduced the concept of using enterprise management tools to add an identity provider to the identity selector.  These enterprise management tools could be used to add an identity that uses the identity provider added in the above manner.  The user would not need to decipher difficult to understand data entry screens.
+                        </t>
+                        <t>
+                            However, having an identity automatically provided, including its password, does have some particular usability issues. Users are used to having to provide their username and password to access remote services. When attempting to access services, authenticating to them completely transparently to the user could represent a source of confusion. User training within an organisation to explain that automated population of their identity has been enabled is the only way to counter this.
+                        </t>
+                    </section>
+                    
                 </section>
-                
-                <section title="Fully Automated Addition" anchor="Identity_Addition_Automated">
-                    <t>
-                        Many organisations manage the machines of their users using enterprise management tools. Such organisations may wish to be able to automatically add a particular user's identity to the identity selector on their machine/network account so that the user has to do nothing.
-                    </t>
-                    <t>
-                        This represents the best usability for the user - who wouldn't actually have to do anything. However, it can only work on machines centrally managed by the organisation.
-                    </t>
-                    <t>
-                        Additionally, having an identity automatically provided, including its password, does have some particular usability issues. Users are used to having to provide their username and password to access remote services. When attempting to access services, authenticating to them completely transparently to the user could represent a source of confusion. User training within an organisation to explain that automated population of their identity has been enabled is the only way to counter this.
-                    </t>
-                </section>
+            
             </section>
             
             <section title="Modifying Identity Information">
@@ -310,13 +393,13 @@
                         An identity selector may allow a user to manually modify some or all of the information associated with each identity. The obvious items that SHOULD be allowed to be changed by the user are the friendly name, the friendly icon, and the credential, or password, associated with the identity.
                     </t>
                     <t>
-                        The identity selector should restrict other modification of the information associated with each identity:
+                        The identity selector should restrict other modification of the information:
                         <list style="symbols">
                             <t>
-                                Identity Selectors SHOULD NOT allow the editing of the NAI or the trust anchor for identities that have been added through automated means (<xref target="Identity_Addition_Automated_Manually_Triggered"> and <xref target="Identity_Addition_Automated">). 
+                                Identity Selectors SHOULD NOT allow the editing of the NAI of an identity or the trust anchor of an identity provider for items that have been added through automated means (<xref target="Id_Prov_Man_Trig_Auto_Add"/>, <xref target="Id_Prov_Auto_Add"/>, <xref target="Identity_Addition_Automated_Manually_Triggered"/> and <xref target="Identity_Addition_Automated"/>). 
                             </t>
                             <t>
-                                Identity Selectors MAY allow the update of the trust anchor of identities that have stored the trust anchor through just in time manual addition, using another just in time retrieval of the trust anchor. Any identity selector that allows this update MUST inform the user of the change in the trust anchor, and advise the user that any unexpected change should be assumed to be an attack.
+                                Identity Selectors MAY allow the update of the trust anchor of identity providers that have stored the trust anchor through just in time manual addition, using another just in time retrieval of the trust anchor. Any identity selector that allows this update MUST inform the user of the change in the trust anchor, and advise the user that any unexpected change should be assumed to be an attack.
                             </t>
                             <t>
                                 Identity Selectors SHOULD NOT allow manual modification of the password changing URL.
@@ -330,7 +413,7 @@
                 
                 <section title="Automated Modification">
                     <t>
-                        To ease usability, organisations may wish to automatically provide updates to identity information. For example, if the user's password changes it could automatically update the password for the identity in the user's identity selector, or if the trust anchor information changes (e.g. if a certificate is changed) it could be automatically pushed out to all users.
+                        To ease usability, organisations may wish to automatically provide updates to identity provider or identity information. For example, if the user's password changes it could automatically update the password for the identity in the user's identity selector, or if the trust anchor information changes (e.g. if a certificate is changed) it could be automatically pushed out to all users.
                     </t>
                 </section>
             </section>
