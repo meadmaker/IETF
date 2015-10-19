@@ -307,7 +307,24 @@
                 
                 <section title="Manual Modification">
                     <t>
-                        An identity selector may allow a user to manually modify some or all of the information associated with each identity. The obvious item that SHOULD be allowed to be changed by the user is the password associated with the identity.
+                        An identity selector may allow a user to manually modify some or all of the information associated with each identity. The obvious items that SHOULD be allowed to be changed by the user are the friendly name, the friendly icon, and the credential, or password, associated with the identity.
+                    </t>
+                    <t>
+                        The identity selector should restrict other modification of the information associated with each identity:
+                        <list style="symbols">
+                            <t>
+                                Identity Selectors SHOULD NOT allow the editing of the NAI or the trust anchor for identities that have been added through automated means (<xref target="Identity_Addition_Automated_Manually_Triggered"> and <xref target="Identity_Addition_Automated">). 
+                            </t>
+                            <t>
+                                Identity Selectors MAY allow the update of the trust anchor of identities that have stored the trust anchor through just in time manual addition, using another just in time retrieval of the trust anchor. Any identity selector that allows this update MUST inform the user of the change in the trust anchor, and advise the user that any unexpected change should be assumed to be an attack.
+                            </t>
+                            <t>
+                                Identity Selectors SHOULD NOT allow manual modification of the password changing URL.
+                            </t>
+                            <t>
+                                Identity Selectors SHOULD NOT allow manual modification of the helpdesk URL.
+                            </t>
+                        </list>
                     </t>
                 </section>
                 
