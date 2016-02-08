@@ -641,7 +641,16 @@
             <t>Service Errors:
                 <list style="symbols">
                  	<t>
-                        The Identity might have been successfully authenticated by the IdP, but the user might not have authorisation to use the service or privilege levels within the service they are attempting to use.
+                        The IdP recognizes the client, but decides not to authorize it for this service.
+                 	</t>
+                 	<t>
+                        The EAP session succeeds, but the RADIUS system sends access-reject to the Relying Party
+                 	</t>
+                 	<t>
+                        The RADIUS system succeeds, but the Relying Party rejects the session. For instance, the SAML part of the session could contain an error that causes the Relying Party to reject the client.
+                 	</t>
+                 	<t>
+                        The Identity might have been successfully authenticated, but the user might not have authorisation to use the service or privilege levels within the service they are attempting to use. For instance, the Identity could authorise the use of an operating system as an unprivileged user, which would prevent the user's goal of managing the hard drives.
                  	</t>
                 </list>
             </t>  
