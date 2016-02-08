@@ -157,7 +157,7 @@
                     Implementers of an identity selector will need to carefully consider their intended audience for both their level of technical capability and the existing terminology that they may have been exposed to.
                 </t>
                 <t>
-                    Beyond terminology, careful thought needs to be given to the paradigm to use when presenting identity to users, as identities and services are abstract concepts that some users may not find easily understandable.  Implementers may wish to keep such abstract concepts despite this, or may wish to examine attempts to map to real world paradigms, e.g. the idea of using "Identity Cards" that are held in the user's "Wallet", as used by the new defunct Microsoft Cardspace (<xref target="MS-CS"/>).
+                    Beyond terminology, careful thought needs to be given to the paradigm to use when presenting identity to users, as identities and services are abstract concepts that some users may not find easily understandable.  Implementers may wish to keep such abstract concepts despite this, or may wish to examine attempts to map to real world paradigms, e.g. the idea of using "Identity Cards" that are held in the user's "Wallet", as used by the now defunct Microsoft Cardspace (<xref target="MS-CS"/>).
                 </t>
             </section>
             
