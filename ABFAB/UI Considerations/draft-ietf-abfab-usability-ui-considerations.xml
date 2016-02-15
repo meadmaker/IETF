@@ -619,57 +619,72 @@
             <t>
                 Errors during the ABFAB authentication process can happen at any of the many layers - they could be GSS-API errors, EAP errors, RADIUS/RadSec errors, SAML errors, application errors, etc. ABFAB based technologies are limited in error handling by the limitations in the protocols used.
             </t>
-            <t>
-                For example, all GSS-API calls are necessarily instantiated from within the calling application. For this reason, when an error occurs the error is passed back to the application in order for it to deal with it. To retry, the application needs to re-initiate the GSS-API call. Unless the application has been written to deal with this properly, this process can be very tedious for a user and cause them opt out of what they are trying to accomplish. In addition to this, the error messages themselves may not be useful enough for the user to decipher what has gone wrong.
-            </t>
-            <t>
-            	Absent an improvement to the error handling of these protocols, implementors of an ABFAB Identity Selector will need to work around these limitations. Possible error conditions need to be considered, and decisions about what errors should be presented to the user, and how, need to be made.
-            </t>
-            <t>
-                To give an idea of the range of errors that might be seen, consider the following non-exhaustive set of potential errors.
-            </t>
-            <t>Identity Association/Verification Errors:
-                <list style="symbols">
+            <section title="Errors in GSS-API" anchor="GSS_Errors">
+              <t>
+                  All GSS-API calls are necessarily instantiated from within the calling application. For this reason, when an error occurs the error is passed back to the application in order for it to deal with it. To retry, the application needs to re-initiate the GSS-API call. Unless the application has been written to deal with this properly, this process can be very tedious for a user and cause them opt out of what they are trying to accomplish. In addition to this, the application may not display the error messages to the user.  Even when the application does display the errors, the messages themselves may not be useful enough for the user to decipher what has gone wrong.
+              </t>
+              <t>
+                  Two extensions to GSS-API are suggested for the consideration of the kitten working group:
+                  <list style="symbols">
                     <t>
-                        The credentials presented to the IdP were not able to be verified - e.g. wrong username/password.
-                 	</t>
-                    <t>
-                       	The Trust Anchor for the IdP was invalid.
+                      GSS-API should provide a method for applications to invoke to indicate that the application has displayed the last error to the user.
                     </t>
-                </list>
-            </t>
-            <t>Service Errors:
-                <list style="symbols">
-                 	<t>
-                        The IdP recognizes the client, but decides not to authorize it for this service.
-                 	</t>
-                 	<t>
-                        The EAP session succeeds, but the RADIUS system sends access-reject to the Relying Party
-                 	</t>
-                 	<t>
-                        The RADIUS system succeeds, but the Relying Party rejects the session. For instance, the SAML part of the session could contain an error that causes the Relying Party to reject the client.
-                 	</t>
-                 	<t>
-                        The Identity might have been successfully authenticated, but the user might not have authorisation to use the service or privilege levels within the service they are attempting to use. For instance, the Identity could authorise the use of an operating system as an unprivileged user, which would prevent the user's goal of managing the hard drives.
-                 	</t>
-                </list>
-            </t>  
-            <t>Other Errors:
-                <list style="symbols">
                     <t>
-                        The IdP didn't respond to the Service.
-                 	</t>
-                 	<t>
-                        The IdP didn't respond to the Client.
-                 	</t>
-                 	<t>
-                        Network errors.
-                 	</t>
-                 	<t>
-                        Timing errors.
-                 	</t>
-                </list>
-            </t>         
+                      GSS-API should provide a method for applications to invoke to indicate that the authentication succeeded, but is insufficient for the task at hand and needs to be retried.
+                    </t>
+                  </list>
+              </t>
+            </section>
+            <t>
+            	  The Identity Selector can improve the general GSS-API error reporting experience by displaying a list of errors experienced by ABFAB applications. When an application error occurs, the EAP mechanism MAY record that error. If the mechanism records these errors, the Identity Selector MAY display these errors to the user. Thus, the user will have a single place to go to view all of the errors that a user experiences across all applications. Therefore, an Identity Selector that implements an error display SHOULD present the user with the context of the error, including the calling application and the time.
+            </t>
+            <section title="Examples of errors">
+              <t>
+                  To give an idea of the range of errors that might be seen, consider the following non-exhaustive set of potential errors.
+              </t>
+              <t>Identity Association/Verification Errors:
+                  <list style="symbols">
+                      <t>
+                          The credentials presented to the IdP were not able to be verified - e.g. wrong username/password.
+                    </t>
+                      <t>
+                          The Trust Anchor for the IdP was invalid.
+                      </t>
+                  </list>
+              </t>
+              <t>Service Errors:
+                  <list style="symbols">
+                    <t>
+                          The IdP recognizes the client, but decides not to authorize it for this service.
+                    </t>
+                    <t>
+                          The EAP session succeeds, but the RADIUS system sends access-reject to the Relying Party
+                    </t>
+                    <t>
+                          The RADIUS system succeeds, but the Relying Party rejects the session. For instance, the SAML part of the session could contain an error that causes the Relying Party to reject the client.
+                    </t>
+                    <t>
+                          The Identity might have been successfully authenticated, but the user might not have authorisation to use the service or privilege levels within the service they are attempting to use. For instance, the Identity could authorise the use of an operating system as an unprivileged user, which would prevent the user's goal of managing the hard drives.
+                    </t>
+                  </list>
+              </t>  
+              <t>Other Errors:
+                  <list style="symbols">
+                      <t>
+                          The IdP didn't respond to the Service.
+                    </t>
+                    <t>
+                          The IdP didn't respond to the Client.
+                    </t>
+                    <t>
+                          Network errors.
+                    </t>
+                    <t>
+                          Timing errors.
+                    </t>
+                  </list>
+              </t>         
+            </section>
         
         </section>
         
