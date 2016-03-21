@@ -1,0 +1,310 @@
+Alejandro <alex@um.es>
+------------------------------------------------------------------------
+Hi,
+
+here is my review of draft-ietf-abfab-usability-ui-considerations-02.txt.
+In general, I've found no difficulties reading it, as it is very clear 
+and complete. I have only a few minor comments some nits:
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  * Section 5.1: s/internet/Internet
+  * Section 6: s/will need to managed/will need to manage
+  * Section 6.1: s/user to authenticate themselves/users to authenticate
+    themselves
+  * Section 11 and 12: Should these sections be moved to the end of the
+    document, right before references section?
+  * Section 7: Does user-driven manual association take precedence over
+    automated one? E.g.: when the user decides that a particular IMAP
+    server will use ID2 instead of the rule "all IMAP servers will use
+    ID1". If so, it might be useful to state it somewhere.
+  * Section 13: A reference to DANE would be nice.
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+  * Section 5.1: A reference to Microsoft Cardspace would be nice.
+
+
+Regards,
+Alejandro
+
+
+Sam Hartman <hartmans@painless-security.com>
+---------------------------------------------------------------------------
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Section 3 and 6.
+Trust anchor is described as either being the trust anchor for a service
+or identity provider.
+In section 6 the document talks about trust anchors for servers.
+IN the scope of this document we only care about trust anchors for
+identity provider.
+I recommend narrowing the definition in section 3 and using more
+specific terminology in section 6.
+
+Section 6.1
+The biggest reason we don't want to store multiple identities with a the
+same NAI is that by passing in a NAI to gss_acquire_creds the
+application can force the choice of a given NAI.
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+Section 8:
+
+Section 8 implies that the identity selector will be in a position to
+decide what errors to present to the user.
+I don't think that's very likely to be true.
+The GSS application is likely to decide what errors to present to the
+user.
+
+The identity selector is in a position to decide what if any automated
+actions to take based on the error.
+
+
+Section 8/9 should discuss the success but useless case.
+That is, I am successfully authenticated and an app layer connection is
+accepted, but I don't have the permissions I need.
+Think about the case where I was hoping to be a moonshot management
+portal admin, but end up being a random user.  I was hoping to create an
+organisation but all I can do is create communities.
+I'm not sure if it is an error or a success.
+
+I think section 8 and 9 could also do a better job of clarifying what it
+means for errors to be reported at different layers.  For example in
+SASL, authorization failures will probably not come back as a GSS error,
+but instead either as a dropped connection or as an app-level error.
+
+--Sam
+
+
+--------------------------------------------------------------------------
+-------- Forwarded Message --------
+Subject: 	feedback on usability draft for abfab
+Date: 	Mon, 13 Jul 2015 15:45:53 +0000
+From: 	Ken Klingenstein <kjk@internet2.edu>
+To: 	Leif Johansson <leifj@sunet.se>, Rhys Smith <Rhys.Smith@jisc.ac.uk>
+
+
+
+Gents,
+  Looked it over. Pretty complete. Just one or two comments.
+
+  Sec 3 talks only of authentication and identity. Are there any use
+cases where a user will want some degree of privacy and want to release
+attributes (maybe packaged as a "pseudo-identity") to allow
+privacy-preserving authentication with authorization to use the service
+conveyed in the attributes released? Could the SSH keys be associated
+with such a pseudo-identity?
+  Sec 6.1 recommends storing the password reset URL for an IdP. I would
+assume it won't be a particularly volatile URL, but it may change. Is it
+advisable to include it then? Having the help desk URL (presumably even
+less volatile) would allow a user to traverse to the password location.
+  There is a security considerations section, but no privacy
+considerations section. Not sure if that is required now in IETF drafts,
+but it would be a worthy addition to this doc given its identity
+orientation. It might address the points about Section 3 mentioned above.
+
+  That's it. Maybe the long grind is done. Good luck and enjoy Prague.
+             Ken
+
+
+--------------------------------------------------------------------------
+
+
+
+Mark:
+Hey all:
+
+My comments on draft-ietf-abfab-usability-ui-considerations-02 follow below.
+
+Cheers,
+--Mark
+
+
+Section 3:
+  * The paragraph on identity says:
+      ----------------------------------------------------------------
+      Note that in
+      other contexts the usual use of "identity" would match our use of
+      "user", whereas the usual use of "identifier" matches our use of
+      identity
+      ----------------------------------------------------------------
+    If other contexts use the terms differently than this document, why
+    not match those contexts?  Wouldn't that be less confusing?
+---- SAM ----
+I think that at least for identity vs identifier the other contexts are
+almost entirely outside of the IETF.  It's complicated now because a
+bunch of those folks have started hanging around OAUTH/JOSE/CBOR.
+However, I think the general point you're making  applies and should be
+considered.
+---- SAM ----
+
+  * Trust Anchor
+    + Does the identity selector deal with trust anchors for services
+      at all?  If so, then this should be addressed in section 6.1,
+      where no mention is made of storing the service's trust
+      identity.
+----> Sent mail to ask Sam if this even exists.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Section 4:
+  * another downside of using the OS credentials for identity is that
+    precludes the idea of authenticating oneself to the OS using ABFAB.
+Section 5.1:
+  * The second paragraph reads:
+    --------------------------------------------------------------------
+      Implementers may wish to keep such abstract
+      concepts, or may wish to examine attempts to map to real world
+      paradigms, e.g. the idea of using "Identity Cards" that are held
+      in the user's "Wallet", as used by Microsoft Cardspace.
+    --------------------------------------------------------------------
+    The first half of that sentence seems to be missing a word, such
+    as, "... keep such abstract concepts *hidden*..."
+Section 6.1:
+  * "Credential" is defined here, but probably deserves an entry in
+    section 3's terminology list.
+  * Further, I think that saying, "the identity selector SHOULD store
+    the credential" isn't descriptive of what we want to happen.  A
+    better phrasing would be that, "the identity selector SHOULD allow
+    a user to store the credential.  However, it MUST NOT store the
+    credentials without confirmation from the user."
+  * The trust identity that the selector stores is that of the Identity
+    Provider, right?  This isn't at all clear from this definition.
+Section 6.2:
+  * Also, you might want to mention the Windows Credentials Manager.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+Section 5.3: Why does this section belong under section 5?
+
+Section 6.1:
+  * The explanation of why the identity selector MUST NOT store
+    different identities that use the same NAI doesn't make a lot of
+    sense to me.  I agree that duplicating the data would be bad in a
+    data-normalization sense, but I don't see why you're saying that it
+    would be dysfunctional as an IETF consideration.
+
+Section 6.2:
+  * Why is secure storage a SHOULD instead of a MUST?  I'd be happy to
+    declare that selectors with world-readable storage are not
+    following this standard.
+
+Section 6.3:
+  * Maybe call the process of putting a new ID in the selector
+    "assertion"?  (feel free to ignore this one if you don't like it)
+
+Section 6.3.2:
+  * Why force users to enter an NAI into a website before downloading a
+    trust anchor?  Why not give an option of downloading a trust anchor
+    without any user information, and having the identity selector
+    prompt the user for all missing bits of required information at
+    import time?  This would prevent people who are eavesdropping on
+    the website from learning user identities.
+---- SAM ----
+Presumably such a website would be https.
+However, I think this is one of many cases where Rhys described what our
+identity selector does, and I think you've done a good job of
+identifying places where the document could be more general.
+I definitely appreciate that work.
+---- SAM ----
+
+Section 6.4.1:
+  * The document should list restrictions on modification of trust
+    anchors.  For instance, manual modification of a trust anchor
+    probably doesn't make any sense.  Semi-automated (re-do a leap of
+    faith or something of the sort) modification of it might make
+    sense, but needs to warn the user that their basis for trusting the
+    system is changing.  Enterprise change pushes probably don't need
+    any notifications.
+---- SAM ----
+It's sad that the IETF has not come up with general advice on updating
+leap-of-faith trust anchors yet as the problem pops up in several
+protocols.
+To my knowledge though we have no such general advice so I agree with
+Mark that we should think about it here.
+---- SAM ----
+
+Section 6.5:
+  * Wouldn't it be possible for the desktop to attempt a validation of
+    the password?  For instance, could there be a standard service -
+    say, "identitymanager" - put in place for every client
+    installation.  Then a user could attempt to authenticate to it, and
+    determine if the password is incorrect.  Heck, maybe that service
+    could be the process that writes the credential to the permanent
+    store.
+---- SAM ----
+Generally, the desktop does not have server credentials.
+It would be possible for each IDP realm to run such a service.
+I think calling that out as a area for future expansion would be good.
+---- SAM ----
+
+-=-=--=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=--=-=-=-=-
+Section 7.1.1, point 1: Doesn't this point contradict section 7.1?
+Section 7.1.2:
+  * The implication here is that rules based association exists solely
+    for enterprise-provisioned identities.  Why would that be
+    restricted?
+  * Also, this is missing a period at the end of the sentence.
+Section 7.2:
+  * What kind of authentication failure causes my local client to
+    dissociate?
+---- SAM ----
+Today none.
+Perhaps a RADIUS routing error to your IDP realm should?
+---- SAM ----
+-=-=--=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=--=-=-=-=-
+
+
+
+Section 7.5:
+  * The identity selector could:
+    + Display OS notifications (Windows system tray, Mac growler, Gnome
+      notifications) when an identity is used - especially when the
+      identity is used without any user prompt.
+    + Keep a history of identity / service usage to display in the
+      identity selector application windows
+  * Could a list of open identity / service mappings be maintained?
+    Could it be added to during GSS_INIT_SEC_CONTEXT,
+    GSS_ACCEPT_SEC_CONTEXT, or GSS_IMPORT_SEC_CONTEXT, and removed
+    whenever the context goes away, either at expiration or as part of
+    GSS_DELETE_SEC_CONTEXT or GSS_EXPORT_SEC_CONTEXT?  This would at
+    least provide a user with a short list.
+---- SAM ----
+I don't understand this.
+Are you saying that the selector could keep track of all the currently
+open contexts?
+One thing to consider is that there are a number of applications that
+delete their context immediately after successful authentication.
+But we definitely could keep a list of recently used identity/service
+mappings.
+---- SAM ----
+
+Conceptual:
+* The trust anchors belong to the IDP realms, right?  Wouldn't it make
+  sense to have two identities within the same realm share a trust
+  anchor?  The document details service to identity mappings, but
+  identity to trust anchor mappings might merit attention too.
+
+---- SAM ----
+This is a *really* good idea.
+---- SAM ----
+
+
+* One of the problems with error handling is that applications have the
+  responsibility to handle errors, but not all of them do this well.
+  Would it make sense to hook into GSS_INIT_SEC_CONTEXT and the like,
+  and record any errors, so that the identity selector can maintain a
+  list of recently encountered errors?  This could be correlated with
+  the services and identities to show the error log for this service or
+  this service/identity combination.
+  - This does get outside of the idea of an "identity selector",
+    however.
+---- SAM ----
+I agree that more discussion of this would be valuable.
+It only catches some of the errors.
+In particular, it doesn't handle the unintended success case I discussed
+in my comments.
+I don't know how much more energy we have for this document.
+One of the things we discussed when we first started this effort was
+whether we wanted to document desired enhancements to GSS.
+Tracking errors at the init_sec_context level plus some routine for
+applications to signal that there had been an app-level authorization
+problem would probably give better error handling experiences.
+---- SAM ----

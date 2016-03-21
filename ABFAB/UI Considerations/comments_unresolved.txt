@@ -1,0 +1,168 @@
+Sam Hartman <hartmans@painless-security.com>
+---------------------------------------------------------------------------
+Section 8:
+
+Section 8 implies that the identity selector will be in a position to
+decide what errors to present to the user.
+I don't think that's very likely to be true.
+The GSS application is likely to decide what errors to present to the
+user.
+
+The identity selector is in a position to decide what if any automated
+actions to take based on the error.
+
+
+Section 8/9 should discuss the success but useless case.
+That is, I am successfully authenticated and an app layer connection is
+accepted, but I don't have the permissions I need.
+Think about the case where I was hoping to be a moonshot management
+portal admin, but end up being a random user.  I was hoping to create an
+organisation but all I can do is create communities.
+I'm not sure if it is an error or a success.
+
+I think section 8 and 9 could also do a better job of clarifying what it
+means for errors to be reported at different layers.  For example in
+SASL, authorization failures will probably not come back as a GSS error,
+but instead either as a dropped connection or as an app-level error.
+
+--Sam
+
+
+--------------------------------------------------------------------------
+
+
+
+Mark:
+Hey all:
+
+My comments on draft-ietf-abfab-usability-ui-considerations-02 follow below.
+
+Cheers,
+--Mark
+
+
+Section 3:
+  * The paragraph on identity says:
+      ----------------------------------------------------------------
+      Note that in
+      other contexts the usual use of "identity" would match our use of
+      "user", whereas the usual use of "identifier" matches our use of
+      identity
+      ----------------------------------------------------------------
+    If other contexts use the terms differently than this document, why
+    not match those contexts?  Wouldn't that be less confusing?
+---- SAM ----
+I think that at least for identity vs identifier the other contexts are
+almost entirely outside of the IETF.  It's complicated now because a
+bunch of those folks have started hanging around OAUTH/JOSE/CBOR.
+However, I think the general point you're making  applies and should be
+considered.
+---- SAM ----
+-=-=-==-=-==-=-=-=-
+Resolution: Either remove the mention of other contexts, or match them.  Removal is much less work.
+-=-=-=-=-=-=-=-=-=-
+
+
+Section 5.3: Why does this section belong under section 5?
+
+Section 6.3.2:
+  * Why force users to enter an NAI into a website before downloading a
+    trust anchor?  Why not give an option of downloading a trust anchor
+    without any user information, and having the identity selector
+    prompt the user for all missing bits of required information at
+    import time?  This would prevent people who are eavesdropping on
+    the website from learning user identities.
+---- SAM ----
+Presumably such a website would be https.
+However, I think this is one of many cases where Rhys described what our
+identity selector does, and I think you've done a good job of
+identifying places where the document could be more general.
+I definitely appreciate that work.
+---- SAM ----
+--> This could be wrapped up in the conversion from trust anchors being part of an NAI to them being part of an IDP object.
+
+Section 6.4.1:
+  * The document should list restrictions on modification of trust
+    anchors.  For instance, manual modification of a trust anchor
+    probably doesn't make any sense.  Semi-automated (re-do a leap of
+    faith or something of the sort) modification of it might make
+    sense, but needs to warn the user that their basis for trusting the
+    system is changing.  Enterprise change pushes probably don't need
+    any notifications.
+---- SAM ----
+It's sad that the IETF has not come up with general advice on updating
+leap-of-faith trust anchors yet as the problem pops up in several
+protocols.
+To my knowledge though we have no such general advice so I agree with
+Mark that we should think about it here.
+---- SAM ----
+
+Section 6.5:
+  * Wouldn't it be possible for the desktop to attempt a validation of
+    the password?  For instance, could there be a standard service -
+    say, "identitymanager" - put in place for every client
+    installation.  Then a user could attempt to authenticate to it, and
+    determine if the password is incorrect.  Heck, maybe that service
+    could be the process that writes the credential to the permanent
+    store.
+---- SAM ----
+Generally, the desktop does not have server credentials.
+It would be possible for each IDP realm to run such a service.
+I think calling that out as a area for future expansion would be good.
+---- SAM ----
+
+Section 7.5:
+  * The identity selector could:
+    + Display OS notifications (Windows system tray, Mac growler, Gnome
+      notifications) when an identity is used - especially when the
+      identity is used without any user prompt.
+    + Keep a history of identity / service usage to display in the
+      identity selector application windows
+  * Could a list of open identity / service mappings be maintained?
+    Could it be added to during GSS_INIT_SEC_CONTEXT,
+    GSS_ACCEPT_SEC_CONTEXT, or GSS_IMPORT_SEC_CONTEXT, and removed
+    whenever the context goes away, either at expiration or as part of
+    GSS_DELETE_SEC_CONTEXT or GSS_EXPORT_SEC_CONTEXT?  This would at
+    least provide a user with a short list.
+---- SAM ----
+I don't understand this.
+Are you saying that the selector could keep track of all the currently
+open contexts?
+One thing to consider is that there are a number of applications that
+delete their context immediately after successful authentication.
+But we definitely could keep a list of recently used identity/service
+mappings.
+---- SAM ----
+
+Conceptual:
+* The trust anchors belong to the IDP realms, right?  Wouldn't it make
+  sense to have two identities within the same realm share a trust
+  anchor?  The document details service to identity mappings, but
+  identity to trust anchor mappings might merit attention too.
+
+---- SAM ----
+This is a *really* good idea.
+---- SAM ----
+
+
+* One of the problems with error handling is that applications have the
+  responsibility to handle errors, but not all of them do this well.
+  Would it make sense to hook into GSS_INIT_SEC_CONTEXT and the like,
+  and record any errors, so that the identity selector can maintain a
+  list of recently encountered errors?  This could be correlated with
+  the services and identities to show the error log for this service or
+  this service/identity combination.
+  - This does get outside of the idea of an "identity selector",
+    however.
+---- SAM ----
+I agree that more discussion of this would be valuable.
+It only catches some of the errors.
+In particular, it doesn't handle the unintended success case I discussed
+in my comments.
+I don't know how much more energy we have for this document.
+One of the things we discussed when we first started this effort was
+whether we wanted to document desired enhancements to GSS.
+Tracking errors at the init_sec_context level plus some routine for
+applications to signal that there had been an app-level authorization
+problem would probably give better error handling experiences.
+---- SAM ----

@@ -634,10 +634,12 @@
                     </t>
                   </list>
               </t>
+              <section title="Log of Errors">
+                <t>
+                    The Identity Selector can improve the general GSS-API error reporting experience by displaying a list of errors experienced by ABFAB applications. When an application error occurs, the EAP mechanism MAY record that error. If the mechanism records these errors, the Identity Selector MAY display these errors to the user. Thus, the user will have a single place to go to view all of the errors that a user experiences across all applications. Therefore, an Identity Selector that implements an error display SHOULD present the user with the context of the error, including the calling application and the time.
+                </t>
+              </section>
             </section>
-            <t>
-            	  The Identity Selector can improve the general GSS-API error reporting experience by displaying a list of errors experienced by ABFAB applications. When an application error occurs, the EAP mechanism MAY record that error. If the mechanism records these errors, the Identity Selector MAY display these errors to the user. Thus, the user will have a single place to go to view all of the errors that a user experiences across all applications. Therefore, an Identity Selector that implements an error display SHOULD present the user with the context of the error, including the calling application and the time.
-            </t>
             <section title="Examples of errors">
               <t>
                   To give an idea of the range of errors that might be seen, consider the following non-exhaustive set of potential errors.
